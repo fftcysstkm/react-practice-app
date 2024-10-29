@@ -1,14 +1,53 @@
+import { useEffect, useState } from "react"
 import Header from "./components/Header"
-import InputWithButton from "./components/InputWithButton"
+import Form from "./components/Form"
+import Recipe from "./components/Recipe"
+import { MealData } from "./types/mealData"
 
-function App() {
+const App = () => {
+
+  const [mealName, setMealName] = useState<string>("")
+  const [mealData, setMealData] = useState<MealData>({
+    idMeal: "",
+    strMeal: "",
+    strInstructions: "",
+    strMealThumb: "",
+    strYoutube: "",
+    strArea: "",
+    strCategory: ""
+  })
+
+  const getMealData = async (e: React.FormEvent<HTMLFormElement>) => {
+
+    e.preventDefault()
+
+    console.log(mealName)
+    console.log(`https://www.themealdb.com/api/json/v1/1/search.php?s=${mealName}`)
+
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${mealName}`)
+    const jsonData = await response.json()
+    const { idMeal, strMeal, strInstructions, strMealThumb, strYoutube, strArea, strCategory } = jsonData.meals[0]
+
+    setMealData({
+      idMeal,
+      strMeal,
+      strInstructions,
+      strMealThumb,
+      strYoutube,
+      strArea,
+      strCategory
+    })
+  }
+
   return (
     <>
       <div>
         <Header />
-        <InputWithButton />
-        <h1>こんにちは</h1>
-        <p>料理検索アプリです。</p>
+        <Form
+          setMealName={setMealName}
+          getMealData={getMealData} />
+        <Recipe
+          mealData={mealData} />
       </div>
     </>
   )
